@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.photos.kilopixels.view.MainActivity">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_search_category_default"
+        android:orderInCategory="100"
+        android:title="Action"
+        app:showAsAction="always"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+    <item
+        android:id="@+id/action_grid_span_1"
+        android:orderInCategory="100"
+        android:title="Layout 1 * 1"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_grid_span_2"
+        android:orderInCategory="100"
+        android:title="Layout 2 * 2"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_grid_span_3"
+        android:orderInCategory="100"
+        android:title="Layout 3 * 3"
+        app:showAsAction="never"/>
+</menu>
