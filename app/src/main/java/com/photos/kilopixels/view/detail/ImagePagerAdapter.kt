@@ -22,8 +22,11 @@ import com.photos.kilopixels.utils.GlideApp
 import com.photos.kilopixels.utils.Utility
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
+import android.widget.ImageView
 import com.github.chrisbanes.photoview.PhotoView
 import com.photos.kilopixels.R
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_detail_view.*
 
 
@@ -31,11 +34,10 @@ import kotlinx.android.synthetic.main.fragment_detail_view.*
  * Created by rahul on 21/1/18.
  */
 class ImagePagerAdapter (private val context: Context, private val items: List<PhotoDetail>,
-        private val currentPos: Int, private val transitionName: String) : PagerAdapter() {
+        private val currentPos: Int) : PagerAdapter() {
 
-    private var inflator: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-    private val views = SparseArray<View?>(items.size)
+    private var views = HashMap<Int, View>()
+    //private var views = SparseArray<View?>(items.size)
 
     override fun isViewFromObject(view: View, `object`: Any): Boolean {
         return view == `object`
@@ -44,31 +46,15 @@ class ImagePagerAdapter (private val context: Context, private val items: List<P
     override fun instantiateItem(collection: ViewGroup, position: Int): Any {
         val item = items[position]
 
-        val itemView = inflator.inflate(R.layout.fragment_detail_view, collection, false)
-        val imageView = itemView.findViewById(R.id.detailIv) as PhotoView
-        //ViewCompat.setTransitionName(imageView, item.id)
+        val imageView = ImageView(collection.context)
+        ViewCompat.setTransitionName(imageView, item.id)
         views.put(position, imageView)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.transitionName = transitionName;
-        }
-
-        val baseTarget = object : SimpleTarget<Drawable>() {
-            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                imageView.setImageDrawable(resource)
-            }
-        }
-
-        GlideApp.with(context)
+        Picasso.with(collection.context)
                 .load(Utility.getUrl(item))
-                .dontAnimate()
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                        startPostponedEnterTransition(context as Activity)
-                        return false
-                    }
-
-                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                .noFade()
+                .into(imageView, object : Callback {
+                    override fun onSuccess() {
                         if (position == currentPos) {
                             imageView.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                                 override fun onPreDraw(): Boolean {
@@ -78,17 +64,20 @@ class ImagePagerAdapter (private val context: Context, private val items: List<P
                                 }
                             })
                         }
-                        return false
+                    }
+
+                    override fun onError() {
+                        ActivityCompat.startPostponedEnterTransition(context as Activity)
                     }
                 })
-                .into(baseTarget)
 
         collection.addView(imageView)
         return imageView
+
     }
 
     override fun destroyItem(collection: ViewGroup, position: Int, view: Any) {
-        views.removeAt(position)
+        views.remove(position)
         collection.removeView(view as View)
     }
 

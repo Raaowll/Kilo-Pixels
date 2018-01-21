@@ -12,8 +12,7 @@ import com.photos.kilopixels.model.PhotoDetail
 import com.photos.kilopixels.view.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_search_photos.*
 import butterknife.BindView
-import com.photos.kilopixels.model.Photos
-import com.photos.kilopixels.model.UpdateDataEvent
+import com.photos.kilopixels.model.events.UpdateDataEvent
 import com.photos.kilopixels.utils.GridItemDecorator
 import com.photos.kilopixels.utils.PaginationScrollListener
 import org.greenrobot.eventbus.EventBus
@@ -23,16 +22,8 @@ import android.view.*
 import android.graphics.Color
 import android.support.v7.widget.*
 import android.os.Build
-import android.support.transition.*
-import android.support.v4.view.ViewCompat
-import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.widget.ImageView
-import com.photos.kilopixels.utils.GridItemClickListener
-import com.photos.kilopixels.view.detail.ViewPagerFragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.RecyclerView
-import com.photos.kilopixels.utils.GlideApp
-import timber.log.Timber
 
 
 /**
@@ -45,7 +36,7 @@ import timber.log.Timber
  * create an instance of this fragment.
  */
 
-class SearchPhotosFragment : Fragment(), LifecycleOwner, GridItemClickListener {
+class SearchPhotosFragment : Fragment(), LifecycleOwner /*GridItemClickListener*/ {
 
     companion object {
         // TODO: Rename parameter arguments, choose names that match
@@ -117,7 +108,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner, GridItemClickListener {
 
         searchPhotosViewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchPhotosViewModel::class.java)
 
-        adapter = SearchPhotosRecyclerAdapter(photoDetail = ArrayList<PhotoDetail>(), context = activity!!, gridItemClickListener = this)
+        //adapter = SearchPhotosRecyclerAdapter(photoDetail = ArrayList<PhotoDetail>(), context = activity!!, gridItemClickListener = this)
 
         searchPhotosViewModel.getLiveData().observe(this, Observer { t -> adapter.updateDataList(t as List<PhotoDetail>) })
 
@@ -223,8 +214,8 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner, GridItemClickListener {
         recyclerView.adapter = adapter
 
         recyclerView.addOnScrollListener(object: PaginationScrollListener() {
-            override fun layoutManager(): StaggeredGridLayoutManager {
-                return layoutManager as StaggeredGridLayoutManager
+            override fun layoutManager(): /*Staggered*/GridLayoutManager {
+                return layoutManager as /*Staggered*/GridLayoutManager
             }
 
             override fun loadMoreItems() {
@@ -292,7 +283,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner, GridItemClickListener {
         }*/
     }
 
-    override fun onItemClick(position: Int, photoDetail: PhotoDetail, imageView: ImageView, photoDetailList: List<PhotoDetail>) {
+    /*override fun onItemClick(position: Int, view: View) {
         val fragment = ViewPagerFragment.newInstance(photoDetailList = photoDetailList, current = position)
 
         val previousFragment = fragmentManager?.findFragmentById(R.id.fragmentContainer)
@@ -355,5 +346,5 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner, GridItemClickListener {
                 ?.addToBackStack("")
                 ?.replace(R.id.fragmentContainer, fragment)
                 ?.commit()
-    }
+    }*/
 }

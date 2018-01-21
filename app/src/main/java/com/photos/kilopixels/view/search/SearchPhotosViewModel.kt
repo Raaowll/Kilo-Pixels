@@ -8,15 +8,11 @@ import com.photos.kilopixels.App
 import com.photos.kilopixels.database.DataMangerSingleton
 import com.photos.kilopixels.model.PhotoDetail
 import com.photos.kilopixels.model.Photos
-import com.photos.kilopixels.model.UpdateDataEvent
 import com.photos.kilopixels.model.entity.PhotosEntity
 import com.photos.kilopixels.network.NetworkUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONArray
 import timber.log.Timber
 import java.util.HashMap

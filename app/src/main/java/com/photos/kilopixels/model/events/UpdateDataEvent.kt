@@ -1,4 +1,6 @@
-package com.photos.kilopixels.model
+package com.photos.kilopixels.model.events
+
+import com.photos.kilopixels.model.PhotoDetail
 
 /**
  * Created by rahul on 20/1/18.

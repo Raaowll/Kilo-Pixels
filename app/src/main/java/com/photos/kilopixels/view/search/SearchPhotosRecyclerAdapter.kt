@@ -18,7 +18,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.photos.kilopixels.R
-import com.photos.kilopixels.model.UpdateDataEvent
+import com.photos.kilopixels.model.events.UpdateDataEvent
 import com.photos.kilopixels.utils.GlideApp
 import com.photos.kilopixels.utils.GridItemClickListener
 import com.photos.kilopixels.utils.LoaderAdapter
@@ -82,7 +82,7 @@ class SearchPhotosRecyclerAdapter(photoDetail: ArrayList<PhotoDetail>, private v
 
         ViewCompat.setTransitionName(holder.previewIv, photoDetail.id);
 
-        holder.previewIv.setOnClickListener({ gridItemClickListener.onItemClick(holder.getAdapterPosition(), photoDetail, holder.previewIv, photosList) })
+        holder.previewIv.setOnClickListener({ gridItemClickListener.onItemClick(photoDetail, it) })
     }
 
     class ItemViewHolder(containerView: View) : RecyclerView.ViewHolder(containerView) {

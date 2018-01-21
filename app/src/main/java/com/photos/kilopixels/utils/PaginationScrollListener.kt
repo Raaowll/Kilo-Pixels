@@ -22,17 +22,19 @@ abstract class PaginationScrollListener(): RecyclerView.OnScrollListener() {
 
          var visibleItemCount = gridLayoutManager.childCount
          var totalItemCount = gridLayoutManager.itemCount
-         var firstVisibleItemPosition = gridLayoutManager.findFirstCompletelyVisibleItemPositions(null)
+         //var firstVisibleItemPosition = gridLayoutManager.findFirstCompletelyVisibleItemPositions(null)
+         var firstVisibleItemPosition = gridLayoutManager.findFirstCompletelyVisibleItemPosition()
 
-         var index = firstVisibleItemPosition[0]
+         //var index = firstVisibleItemPosition[0]
 
-         //Timber.d("Visible item count $visibleItemCount")
-         //Timber.d("Total item count $totalItemCount")
+         Timber.d("Visible item count $visibleItemCount")
+         Timber.d("Total item count $totalItemCount")
          //Timber.d("First visible item position $index")
+         Timber.d("First visible item position $firstVisibleItemPosition")
 
          if (!isLoading() && !isLastPage()) {
-            if ((visibleItemCount + firstVisibleItemPosition[0]) >= totalItemCount
-                    && firstVisibleItemPosition[0] >= 0
+            if ((visibleItemCount + firstVisibleItemPosition/*[0]*/) >= totalItemCount
+                    && firstVisibleItemPosition/*[0]*/ >= 0
                     && totalItemCount >= getTotalPageCount()) {
                 loadMoreItems()
             }
@@ -48,6 +50,6 @@ abstract class PaginationScrollListener(): RecyclerView.OnScrollListener() {
 
     abstract fun isLoading(): Boolean
 
-    abstract fun layoutManager(): StaggeredGridLayoutManager
+    abstract fun layoutManager(): /*Staggered*/GridLayoutManager
 
 }
