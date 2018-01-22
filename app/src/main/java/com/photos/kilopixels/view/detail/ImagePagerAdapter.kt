@@ -51,8 +51,7 @@ class ImagePagerAdapter (private val context: Context, private val items: List<P
         views.put(position, imageView)
 
         Picasso.with(collection.context)
-                .load(Utility.getUrl(item))
-                .noFade()
+                .load(Utility.getUrlFullImage(item))
                 .into(imageView, object : Callback {
                     override fun onSuccess() {
                         if (position == currentPos) {

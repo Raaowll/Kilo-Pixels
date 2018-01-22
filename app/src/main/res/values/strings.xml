@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">KiloPixels</string>
+
+    <string name="action_grid_span_1">action_grid_span_1</string>
+    <string name="action_grid_span_2">action_grid_span_2</string>
+    <string name="action_grid_span_3">action_grid_span_3</string>
 </resources>

@@ -18,7 +18,7 @@ abstract class PaginationScrollListener(): RecyclerView.OnScrollListener() {
      override fun onScrolled(recyclerView: RecyclerView , dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
 
-         val gridLayoutManager = layoutManager()
+         val gridLayoutManager: GridLayoutManager = layoutManager()
 
          var visibleItemCount = gridLayoutManager.childCount
          var totalItemCount = gridLayoutManager.itemCount

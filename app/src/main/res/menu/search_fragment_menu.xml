@@ -10,19 +10,22 @@
         android:title="Action"
         app:showAsAction="always"
         app:actionViewClass="android.support.v7.widget.SearchView" />
-    <item
+    <!--<item
         android:id="@+id/action_grid_span_1"
         android:orderInCategory="100"
         android:title="Layout 1 * 1"
+        android:icon="@drawable/single_column"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_grid_span_2"
         android:orderInCategory="100"
         android:title="Layout 2 * 2"
+        android:icon="@drawable/double_column"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_grid_span_3"
         android:orderInCategory="100"
         android:title="Layout 3 * 3"
-        app:showAsAction="never"/>
+        android:icon="@drawable/triple_column"
+        app:showAsAction="never"/>-->
 </menu>

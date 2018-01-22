@@ -170,7 +170,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner /*GridItemClickListener*
 
         return if (id == R.id.action_search) {
             true
-        } else if (id == R.id.action_grid_span_1) {
+        } /*else if (id == R.id.action_grid_span_1) {
             layoutManager = setLayoutManager(1)
             //adapter.notifyDataSetChanged()
             true
@@ -182,7 +182,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner /*GridItemClickListener*
             layoutManager = setLayoutManager(3)
             //adapter.notifyDataSetChanged()
             true
-        } else super.onOptionsItemSelected(item)
+        }*/ else super.onOptionsItemSelected(item)
     }
 
     private fun whiteNotificationBar(view: View) {

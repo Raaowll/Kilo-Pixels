@@ -12,6 +12,7 @@ import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.photos.kilopixels.R
 import com.photos.kilopixels.model.PhotoDetail
 import com.photos.kilopixels.model.events.LoadMoreDataEvent
@@ -71,7 +72,7 @@ class PhotoDetailActivity: AppCompatActivity(), LifecycleOwner {
 
         lifecycle.addObserver(photosLifecycleObserver)
 
-        //searchPhotosViewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchPhotosViewModel::class.java)
+        searchPhotosViewModel = ViewModelProviders.of(this, viewModelFactory).get(SearchPhotosViewModel::class.java)
 
         ActivityCompat.postponeEnterTransition(this)
         ActivityCompat.setEnterSharedElementCallback(this, enterElementCallback)
@@ -83,9 +84,9 @@ class PhotoDetailActivity: AppCompatActivity(), LifecycleOwner {
         viewPager.adapter = imagePagerAdapter
         viewPager.currentItem = currentPosition
 
-        //searchPhotosViewModel.getLiveData().observe(this, Observer { t -> updateData(t as ArrayList<PhotoDetail>) })
+        searchPhotosViewModel.getLiveData().observe(this, Observer { t -> updateData(t as ArrayList<PhotoDetail>) })
 
-        MainActivity.liveData.observe(this, Observer { t -> updateData(t as ArrayList<PhotoDetail>) })
+        //MainActivity.liveData.observe(this, Observer { t -> updateData(t as ArrayList<PhotoDetail>) })
 
         viewPager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
@@ -114,6 +115,7 @@ class PhotoDetailActivity: AppCompatActivity(), LifecycleOwner {
 
     override fun onBackPressed() {
         supportFinishAfterTransition()
+
         super.onBackPressed()
     }
 

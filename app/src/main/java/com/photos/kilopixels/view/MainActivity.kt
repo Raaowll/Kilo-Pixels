@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -32,6 +33,14 @@ import com.photos.kilopixels.view.search.SearchPhotosViewModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import timber.log.Timber
+import android.support.v7.view.menu.MenuBuilder
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ImageSpan
+import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.reflect.Method
+
 
 class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener {
 
@@ -107,9 +116,9 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
         adapter = SearchPhotosRecyclerAdapter(photoDetail = ArrayList<PhotoDetail>(), context = this, gridItemClickListener = this)
 
-        searchPhotosViewModel.getLiveData().observe(this, Observer { t -> adapter.updateDataList(t as List<PhotoDetail>) })
-
         searchPhotosViewModel.getLiveData().observe(this, Observer { t -> updateData(t as ArrayList<PhotoDetail>) })
+
+        searchPhotosViewModel.getLiveData().observe(this, Observer { t -> adapter.updateDataList(t as List<PhotoDetail>) })
 
         initRecyclerView()
 
@@ -118,6 +127,10 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.search_fragment_menu, menu)
+
+        menu.add(0, R.string.action_grid_span_1, 1, menuIconWithText(getResources().getDrawable(R.drawable.single_column), "Comfortable View"))
+        menu.add(0, R.string.action_grid_span_2, 2, menuIconWithText(getResources().getDrawable(R.drawable.double_column), "2 * 2"))
+        menu.add(0, R.string.action_grid_span_3, 3, menuIconWithText(getResources().getDrawable(R.drawable.triple_column), "3 * 3"))
 
         searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
         searchView!!.maxWidth = Integer.MAX_VALUE
@@ -130,9 +143,9 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
                 searchPhotosViewModel.getPhotos(query, currentPage.toString())
 
-                /*searchView!!.setQuery("", false)
+                //searchView!!.setQuery("", false)
                 searchView!!.clearFocus()
-                searchView!!.isIconified = true*/
+                //searchView!!.isIconified = true
 
                 return false
             }
@@ -144,9 +157,17 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
         return true
     }
 
+    private fun menuIconWithText(r: Drawable, title: String): CharSequence {
+        r.setBounds(0, 0, r.intrinsicWidth, r.intrinsicHeight);
+        val sb = SpannableString("    " + title);
+        val imageSpan = ImageSpan(r, ImageSpan.ALIGN_BOTTOM);
+        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+    }
+
     private fun resetData() {
         recyclerView.visibility = View.VISIBLE
-        //infoTv.visibility = View.GONE
+        infoTv.visibility = View.GONE
         adapter.photosList.clear()
         adapter.notifyDataSetChanged()
         currentPage = PAGE_START
@@ -161,15 +182,15 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
         return if (id == R.id.action_search) {
             true
-        } else if (id == R.id.action_grid_span_1) {
+        } else if (id == R.string.action_grid_span_1) {
             layoutManager = setLayoutManager(1)
             //adapter.notifyDataSetChanged()
             true
-        } else if (id == R.id.action_grid_span_2) {
+        } else if (id == R.string.action_grid_span_2) {
             layoutManager = setLayoutManager(2)
             //adapter.notifyDataSetChanged()
             true
-        } else if (id == R.id.action_grid_span_3) {
+        } else if (id == R.string.action_grid_span_3) {
             layoutManager = setLayoutManager(3)
             //adapter.notifyDataSetChanged()
             true
@@ -192,13 +213,13 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
     override fun onResume() {
         super.onResume()
-        /*if (adapter != null && adapter.photosList != null && !adapter.photosList.isEmpty()) {
+        if (adapter != null && adapter.photosList != null && !adapter.photosList.isEmpty()) {
             recyclerView.visibility = View.VISIBLE
             infoTv.visibility = View.GONE
         } else {
             recyclerView.visibility = View.GONE
             infoTv.visibility = View.VISIBLE
-        }*/
+        }
     }
 
     private fun initRecyclerView() {
@@ -238,6 +259,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
             }
 
             override fun isLoading(): Boolean {
+                Timber.d("Is Loading: $isLoading")
                 return isLoading
             }
 
@@ -251,6 +273,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
         //val layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         //layoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
         recyclerView.layoutManager = layoutManager
+        isLoading = false
         return layoutManager
     }
 
@@ -284,6 +307,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
             val p1 = android.support.v4.util.Pair.create(view, ViewCompat.getTransitionName(view))
             bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1).toBundle()
         }
+
         startActivity(intent, bundle)
     }
 
@@ -293,7 +317,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
         reenterState?.let {
             val startingPosition = it.getInt(EXTRA_STARTING_ALBUM_POSITION)
             val currentPosition = it.getInt(EXTRA_CURRENT_ALBUM_POSITION)
-            if (startingPosition != currentPosition) recyclerView.scrollToPosition(currentPosition)
+            if (startingPosition != currentPosition) recyclerView.smoothScrollToPosition(currentPosition)
             ActivityCompat.postponeEnterTransition(this)
 
             recyclerView.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {

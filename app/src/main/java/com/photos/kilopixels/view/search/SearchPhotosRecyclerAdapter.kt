@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
+import com.bumptech.glide.Glide
 import com.photos.kilopixels.model.PhotoDetail
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -56,33 +57,50 @@ class SearchPhotosRecyclerAdapter(photoDetail: ArrayList<PhotoDetail>, private v
 
         Log.d("position $position:", url + " ");
 
-        val baseTarget = object : SimpleTarget<Drawable>() {
-            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                holder.previewIv.scaleType = ImageView.ScaleType.CENTER_CROP
-                holder.previewIv.setImageDrawable(resource)
-                if (photoDetail.localUri == null) {
-                    photoDetail.localUrl = saveBitmapToFile(Utility.drawableToBitmap(resource), photoDetail.id + ".jpg")
-                    val path = context.filesDir.absolutePath
-                    val file = File(path + "/" + photoDetail.localUrl)
-                    photoDetail.localUri = Uri.fromFile(file).toString()
-                    photoDetail.isSavedLocally = true
-                    EventBus.getDefault().postSticky(UpdateDataEvent(photoDetailList = photosList, position = position))
-                }
-            }
-        }
-
-        GlideApp.with(context)
-                .load(url)
-                .centerCrop()
-                .placeholder(R.drawable.abc_cab_background_top_material)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .thumbnail(0.3f)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(baseTarget)
-
+        holder.previewIv.tag = photoDetail.id
         ViewCompat.setTransitionName(holder.previewIv, photoDetail.id);
 
         holder.previewIv.setOnClickListener({ gridItemClickListener.onItemClick(photoDetail, it) })
+
+        holder.previewIv.layoutParams.height = context.resources.getDimension(R.dimen.image_height).toInt()
+
+        //try {
+
+            if (photoDetail.isSavedLocally && photoDetail.localUri != null) {
+                holder.previewIv.scaleType = ImageView.ScaleType.CENTER_CROP
+                GlideApp.with(context)
+                        .load(photoDetail.localUri)
+                        .centerCrop()
+                        .into(holder.previewIv)
+            } else {
+                val baseTarget = object : SimpleTarget<Drawable>() {
+
+                    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                        holder.previewIv.scaleType = ImageView.ScaleType.CENTER_CROP
+                        holder.previewIv.setImageDrawable(resource)
+                        if (photoDetail.localUri == null) {
+                            photoDetail.localUrl = saveBitmapToFile(Utility.drawableToBitmap(resource), photoDetail.id + ".jpg")
+                            val path = context.filesDir.absolutePath
+                            val file = File(path + "/" + photoDetail.localUrl)
+                            photoDetail.localUri = Uri.fromFile(file).toString()
+                            photoDetail.isSavedLocally = true
+                            EventBus.getDefault().postSticky(UpdateDataEvent(photoDetailList = photosList, position = position))
+                        }
+                    }
+                }
+
+                GlideApp.with(context)
+                        .load(url)
+                        .centerCrop()
+                        .placeholder(R.drawable.abc_cab_background_top_material)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .thumbnail(0.3f)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(baseTarget)
+            }
+        /*} catch (ex: IllegalArgumentException) {
+            ex.printStackTrace()
+        }*/
     }
 
     class ItemViewHolder(containerView: View) : RecyclerView.ViewHolder(containerView) {
@@ -96,7 +114,7 @@ class SearchPhotosRecyclerAdapter(photoDetail: ArrayList<PhotoDetail>, private v
         this.photosList.addAll(newData)
         Timber.d("Updated data " + photosList.size)
         //Collections.reverse(this.photosList)
-        showLoading(false)
+        //showLoading(false)
         notifyDataSetChanged()
     }
 

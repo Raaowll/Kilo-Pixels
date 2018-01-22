@@ -33,9 +33,15 @@ class Utility {
         }
 
         fun getUrl(photoDetail: PhotoDetail): String {
-            return photoDetail.localUri ?: photoDetail.url_sq ?: photoDetail.url_t ?: photoDetail.url_c ?: photoDetail.url_n ?:
-            photoDetail.url_l ?: photoDetail.url_m ?: photoDetail.url_s ?: photoDetail.url_sq ?:
-            photoDetail.url_z ?: photoDetail.url_o ?: ""
+            return photoDetail.localUri ?: photoDetail.url_sq ?: photoDetail.url_t ?: photoDetail.url_q ?: photoDetail.url_s ?:
+            photoDetail.url_n ?: photoDetail.url_m ?: photoDetail.url_z ?: photoDetail.url_c ?:
+            photoDetail.url_l ?: photoDetail.url_o ?: ""
+        }
+
+        fun getUrlFullImage(photoDetail: PhotoDetail): String {
+            return photoDetail.localUri ?: photoDetail.url_l ?: photoDetail.url_c ?: photoDetail.url_z ?: photoDetail.url_m ?:
+            photoDetail.url_o ?: photoDetail.url_n ?: photoDetail.url_s ?: photoDetail.url_t ?:
+            photoDetail.url_s ?: photoDetail.url_sq ?: ""
         }
     }
 }
