@@ -13,7 +13,7 @@ import java.io.InputStream
  * Created by rahulmeena on 29/01/18.
  */
 @GlideModule
-class qOkHttpLibraryGlideModule: LibraryGlideModule() {
+class OkHttpLibraryGlideModule: LibraryGlideModule() {
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory())
     }
