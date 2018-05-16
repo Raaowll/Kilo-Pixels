@@ -118,7 +118,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner /*GridItemClickListener*
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater?.let { it.inflate(R.layout.fragment_search_photos, container, false) }
+        val view = inflater.let { it.inflate(R.layout.fragment_search_photos, container, false) }
 
         ButterKnife.bind(this, view)
 
@@ -206,7 +206,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner /*GridItemClickListener*
         layoutManager = setLayoutManager(currentGridSpanCount)
         recyclerView.setHasFixedSize(true)
 
-        val itemDecoration = GridItemDecorator(this!!.activity!!, R.dimen.grid_spacing3dp)
+        val itemDecoration = GridItemDecorator(this.activity!!, R.dimen.grid_spacing3dp)
         recyclerView.addItemDecoration(itemDecoration)
 
         recyclerView.isNestedScrollingEnabled = false
@@ -257,9 +257,7 @@ class SearchPhotosFragment : Fragment(), LifecycleOwner /*GridItemClickListener*
     fun onEvent(updateDataEvent: UpdateDataEvent) {
         EventBus.getDefault().removeStickyEvent(updateDataEvent)
 
-        if (updateDataEvent.photoDetailList != null) {
-            searchPhotosViewModel.updateDataLocally(updateDataEvent.photoDetailList, updateDataEvent.position)
-        }
+        searchPhotosViewModel.updateDataLocally(updateDataEvent.photoDetailList, updateDataEvent.position)
     }
 
     override fun onStart() {

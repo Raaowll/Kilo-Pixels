@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.app.SharedElementCallback
+import android.support.v4.util.Pair
 import android.support.v4.view.ViewCompat
 import android.support.v7.widget.*
 import android.view.*
@@ -21,7 +22,6 @@ import butterknife.ButterKnife
 import com.photos.kilopixels.R
 import com.photos.kilopixels.model.PhotoDetail
 import com.photos.kilopixels.model.events.LoadMoreDataEvent
-import com.photos.kilopixels.model.events.NewDataAvailableEvent
 import com.photos.kilopixels.model.events.UpdateDataEvent
 import com.photos.kilopixels.utils.GridItemClickListener
 import com.photos.kilopixels.utils.GridItemDecorator
@@ -34,12 +34,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
-import android.support.v7.view.menu.MenuBuilder
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.reflect.Method
 
 
 class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener {
@@ -53,11 +51,11 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
     @BindView(R.id.recyclerView)
     lateinit var recyclerView: RecyclerView
 
-    private val PAGE_START = 1
+    private val PageStart = 1
     private var isLoading = false
     private var isLastPage = false
-    private val TOTAL_PAGES = 5
-    private var currentPage = PAGE_START
+    private val TotalPages = 5
+    private var currentPage = PageStart
     private var searchQuery: String = ""
 
     private val MOVE_DEFAULT_TIME: Long = 1000
@@ -87,14 +85,14 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
                 val currentPosition = reenterState!!.getInt(EXTRA_CURRENT_ALBUM_POSITION)
                 if (startingPosition != currentPosition) {
                     // Current element has changed, need to override previous exit transitions
-                    val newTransitionName = dataList?.get(currentPosition)?.id
+                    val newTransitionName = dataList[currentPosition].id
                     val newSharedElement = recyclerView.findViewWithTag<ImageView>(newTransitionName)
                     if (newSharedElement != null) {
                         names.clear()
                         names.add(newTransitionName!!)
 
                         sharedElements.clear()
-                        sharedElements.put(newTransitionName, newSharedElement)
+                        sharedElements[newTransitionName] = newSharedElement
                     }
                 }
                 reenterState = null
@@ -132,7 +130,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
         menu.add(0, R.string.action_grid_span_2, 2, menuIconWithText(getResources().getDrawable(R.drawable.double_column), "2 * 2"))
         menu.add(0, R.string.action_grid_span_3, 3, menuIconWithText(getResources().getDrawable(R.drawable.triple_column), "3 * 3"))
 
-        searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
+        searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView!!.maxWidth = Integer.MAX_VALUE
 
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -170,7 +168,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
         infoTv.visibility = View.GONE
         adapter.photosList.clear()
         adapter.notifyDataSetChanged()
-        currentPage = PAGE_START
+        currentPage = PageStart
         isLoading = false
         isLastPage = false
         dataList.clear()
@@ -213,7 +211,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
     override fun onResume() {
         super.onResume()
-        if (adapter != null && adapter.photosList != null && !adapter.photosList.isEmpty()) {
+        if (!adapter.photosList.isEmpty()) {
             recyclerView.visibility = View.VISIBLE
             infoTv.visibility = View.GONE
         } else {
@@ -230,8 +228,8 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
         //itemAnimator.addDuration = 1000
         recyclerView.itemAnimator = itemAnimator
 
-
         layoutManager = setLayoutManager(currentGridSpanCount)
+
         recyclerView.setHasFixedSize(true)
 
         val itemDecoration = GridItemDecorator(this, R.dimen.grid_spacing3dp)
@@ -241,7 +239,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
         recyclerView.adapter = adapter
 
-        recyclerView.addOnScrollListener(object: PaginationScrollListener() {
+        recyclerView.addOnScrollListener(object : PaginationScrollListener() {
             override fun layoutManager(): /*Staggered*/GridLayoutManager {
                 return layoutManager as /*Staggered*/GridLayoutManager
             }
@@ -251,7 +249,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
             }
 
             override fun getTotalPageCount(): Int {
-                return TOTAL_PAGES
+                return TotalPages
             }
 
             override fun isLastPage(): Boolean {
@@ -272,6 +270,15 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
                 , false)
         //val layoutManager = StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
         //layoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+
+        if (spanCount > 1) {
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return adapter.getItemViewType(position)
+                }
+            }
+        }
+
         recyclerView.layoutManager = layoutManager
         isLoading = false
         return layoutManager
@@ -281,9 +288,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
     fun onEvent(updateDataEvent: UpdateDataEvent) {
         EventBus.getDefault().removeStickyEvent(updateDataEvent)
 
-        if (updateDataEvent.photoDetailList != null) {
-            searchPhotosViewModel.updateDataLocally(updateDataEvent.photoDetailList, updateDataEvent.position)
-        }
+        searchPhotosViewModel.updateDataLocally(updateDataEvent.photoDetailList, updateDataEvent.position)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -304,7 +309,7 @@ class MainActivity : AppCompatActivity(), LifecycleOwner, GridItemClickListener 
 
         var bundle: Bundle? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val p1 = android.support.v4.util.Pair.create(view, ViewCompat.getTransitionName(view))
+            val p1 = Pair.create(view, ViewCompat.getTransitionName(view))
             bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1).toBundle()
         }
 

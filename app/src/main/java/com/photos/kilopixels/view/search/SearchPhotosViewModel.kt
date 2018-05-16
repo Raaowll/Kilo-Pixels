@@ -15,7 +15,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONArray
 import timber.log.Timber
-import java.util.HashMap
+import java.util.*
 
 /**
  * Created by rahul on 19/1/18.
@@ -62,7 +62,7 @@ class SearchPhotosViewModel : ViewModel() {
     }
 
     private fun syncDataLocally(photos: Photos, searchText: String) {
-        if (photos.photo != null && !photos.photo.isEmpty()) {
+        if (!photos.photo.isEmpty()) {
 
             photos.searchText = searchText
 
@@ -74,18 +74,18 @@ class SearchPhotosViewModel : ViewModel() {
 
             val dataDetail = gson.toJson(photos.photo)
 
-            var photosEntity = photos.createEntity(photos, dataDetail)
+            val photosEntity = photos.createEntity(photos, dataDetail)
 
             disposable.add(dataMangerSingleton.syncDataLocally(photosEntity)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ Timber.d("Data synced successful") },
-                            { t -> Timber.d("Data sync error") }))
+                            { t -> Timber.d("Data sync error: $t") }))
         }
     }
 
     fun updateDataLocally(photoDetailList: List<PhotoDetail>, position: Int) {
-        if (photoDetailList != null && !photoDetailList.isEmpty()) {
+        if (!photoDetailList.isEmpty()) {
             val keyValue = photoDetailList[position].pageNumber
             if (!map.containsKey(keyValue)) return
 
@@ -93,13 +93,13 @@ class SearchPhotosViewModel : ViewModel() {
 
             val dataDetail = gson.toJson(photoDetailList)
 
-            var photosEntity = photos?.createEntity(photos, dataDetail)
+            val photosEntity = photos?.createEntity(photos, dataDetail)
 
             disposable.add(dataMangerSingleton.updateDataLocally(photosEntity!!)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ Timber.d("Data updated successfully") },
-                            { t -> Timber.d("Data update error") }))
+                            { t -> Timber.d("Data update error, $t") }))
         }
     }
 
@@ -122,8 +122,8 @@ class SearchPhotosViewModel : ViewModel() {
     }
 
     private fun convertDataToJson(photosEntity: PhotosEntity): Photos {
-        var dataValue = photosEntity.dataDetail
-        var jsonArray = JSONArray(dataValue)
+        val dataValue = photosEntity.dataDetail
+        val jsonArray = JSONArray(dataValue)
         val listType = object : TypeToken<List<PhotoDetail>>() {}.type
         val dataList: ArrayList<PhotoDetail> = gson.fromJson(jsonArray.toString(), listType)
 
@@ -133,6 +133,7 @@ class SearchPhotosViewModel : ViewModel() {
     private fun appendPageNumber(photos: Photos) {
         for(photoDetail in photos.photo) {
             photoDetail.pageNumber = photos.page
+            photoDetail.itemId = UUID.randomUUID().mostSignificantBits
         }
     }
 

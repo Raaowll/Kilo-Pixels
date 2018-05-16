@@ -60,7 +60,7 @@ class PhotoDetailActivity: AppCompatActivity(), LifecycleOwner {
                     names.add(ViewCompat.getTransitionName(sharedElement))
 
                     sharedElements.clear()
-                    sharedElements.put(ViewCompat.getTransitionName(sharedElement), sharedElement!!)
+                    sharedElements[ViewCompat.getTransitionName(sharedElement)] = sharedElement!!
                 }
             }
         }

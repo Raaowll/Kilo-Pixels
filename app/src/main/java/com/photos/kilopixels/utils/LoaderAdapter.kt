@@ -23,7 +23,7 @@ abstract class LoaderAdapter<T, U>(var photosList: ArrayList<T>, private val con
     }
 
     override fun getItemCount(): Int {
-        if (photosList == null || photosList.isEmpty()) return 0
+        if (photosList.isEmpty()) return 0
 
         return photosList.size + 1
     }

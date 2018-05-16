@@ -94,6 +94,8 @@ class PhotoDetail() : Parcelable {
 
     @SerializedName("local_saved") var isSavedLocally: Boolean = false
 
+    @SerializedName("item_id") var itemId: Long = 0
+
     constructor(parcel: Parcel) : this() {
         isfamily = parcel.readString()
         width_l = parcel.readString()
@@ -138,11 +140,12 @@ class PhotoDetail() : Parcelable {
         localUri = parcel.readString()
         pageNumber = parcel.readString()
         isSavedLocally = parcel.readByte() != 0.toByte()
+        itemId = parcel.readLong()
     }
 
     override fun toString(): String {
         return "ClassPojo [isfamily = $isfamily, width_l = $width_l, width_n = $width_n, ispublic = $ispublic, width_m = $width_m, width_o = $width_o, width_q = $width_q, height_sq = $height_sq, width_t = $width_t, url_sq = $url_sq, width_s = $width_s, isfriend = $isfriend, height_z = $height_z, farm = $farm, id = $id, title = $title, url_c = $url_c, url_o = $url_o, url_n = $url_n, width_c = $width_c, url_m = $url_m, url_l = $url_l, url_t = $url_t, height_m = $height_m, height_l = $height_l, url_q = $url_q, height_o = $height_o, height_n = $height_n, url_s = $url_s, height_q = $height_q, height_s = $height_s, height_t = $height_t, url_z = $url_z, width_z = $width_z, owner = $owner, width_sq = $width_sq, secret = $secret, server = $server, height_c = $height_c, local_url = $localUrl" +
-                ", isSavedLocally = $isSavedLocally, localUri = $localUri, pageNumber = $pageNumber]"
+                ", isSavedLocally = $isSavedLocally, localUri = $localUri, pageNumber = $pageNumber, itemId = $itemId]"
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -189,6 +192,7 @@ class PhotoDetail() : Parcelable {
         parcel.writeString(localUri)
         parcel.writeString(pageNumber)
         parcel.writeByte(if (isSavedLocally) 1 else 0)
+        parcel.writeLong(itemId)
     }
 
     override fun describeContents(): Int {

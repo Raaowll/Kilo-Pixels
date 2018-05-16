@@ -94,7 +94,7 @@ class DetailedViewFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater?.let { it.inflate(R.layout.fragment_detail_view, container, false) }
+        val view = inflater.let { it.inflate(R.layout.fragment_detail_view, container, false) }
 
         ButterKnife.bind(this, view)
 

@@ -42,7 +42,7 @@ class DataMangerSingleton {
         optionsMap["content_type"] = "1"
         optionsMap["media"] = "photos"
         optionsMap["extras"] = "url_o,url_c,url_z"
-        optionsMap["per_page"] = "10"
+        optionsMap["per_page"] = "50"
         optionsMap["page"] = pageNumber
         optionsMap["format"] = "json"
         optionsMap["text"] = searchTag
